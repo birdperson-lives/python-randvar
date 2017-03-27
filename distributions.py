@@ -18,17 +18,25 @@ def uniform(iterable, viability=DEFAULT_VIABILITY):
 	n = len(obj)
 	return RandVar({val: 1/n for val in obj}, viability=viability)
 
-def poisson_trunc(n, expectation=1.0, viability=DEFAULT_VIABILITY):
+def poisson_trunc(n, expectation=1.0, viability=DEFAULT_VIABILITY, stretch=False):
 	"""
 	Returns a random variable following a Poisson distribution with expected
-	value 'expectation', truncated so that all values greater than 'n' are
-	reduced to n.
+	value 'expectation', truncated so that values greater than 'n' are not
+	possible.
+
+	If 'stretch' is true, then the probabilities are all scaled equally so that
+	they add up to 1.0. Otherwise, the remaining probability is added on to the
+	probability for 'n'.
 	"""
 
 	dist = {}
 	total = 1.0
-	for i in range(n):
+	for i in range(n+1):
 		dist[i] = expectation**i/math.factorial(i)*math.exp(-expectation)
 		total -= dist[i]
-	dist[n] = total
+	if stretch:
+		for i in range(n+1):
+			dist[i] /= 1-total
+	else:
+		dist[n] += total
 	return RandVar(dist, viability=viability)

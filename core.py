@@ -80,8 +80,10 @@ def randomable(func):
 	"""
 	A function wrapper so that the functions returns a random variable
 	representing the distribution of return values of the body given that all
-	the arguments are random variables. All non-random variable arguments to
-	the function are treated as having the assigned value with probability 1.0.
+	the arguments are random variables.
+
+	All non-random variable arguments to the function are treated as having the
+	assigned value with probability 1.0.
 	"""
 
 	def applied_to(*args, **kwargs):
