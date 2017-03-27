@@ -124,12 +124,19 @@ def rand_apply(func, *args, viability=1.0, **kwargs):
 			skwargs[name] = kwargs[name]
 		else:
 			skwargs[name] = RandVar({kwargs[name]: 1.0})
-	viability = min(itertools.chain([viability], (sarg._viability for sarg in sargs), (skwargs[name]._viability for name in skwargs)))
+	viability = min(itertools.chain([viability],
+									(sarg._viability for sarg in sargs),
+									(skwargs[name]._viability for name in skwargs)))
 	dist = {}
 	for targs in _it_prod(var._dist for var in sargs):
 		for tkwargs in _it_prod(kwargs[name]._dist for name in skwargs):
 			tkwargs = {name: tkwargs[i] for name in skwargs}
-			prob = functools.reduce(operator.mul, itertools.chain([1.0], (sargs[i]._dist[targs[i]] for i in range(len(sargs))))) * functools.reduce(operator.mul, itertools.chain([1.0], (skwargs[name]._dist[tkwargs[name]] for name in skwargs)))
+			prob = functools.reduce(operator.mul,
+									itertools.chain([1.0],
+													(sargs[i]._dist[targs[i]] for i in range(len(sargs))))) * \
+				   functools.reduce(operator.mul,
+				   					itertools.chain([1.0],
+				     								(skwargs[name]._dist[tkwargs[name]] for name in skwargs)))
 			if prob > 0.0:
 				val = func(*targs, **tkwargs)
 				if val not in dist:
