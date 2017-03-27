@@ -1,26 +1,28 @@
 from randvar import get_default_viability, RandVar
 import math
 
-DEFAULT_VIABILITY = get_default_viability()
-
-def const(val, viability=DEFAULT_VIABILITY):
+def const(val, viability=None):
 	"""
 	Returns a random variable that takes the value 'val' with probability 1.0.
 	"""
 
+	if viability is None:
+		viability = get_default_viability()
 	return RandVar({val: 1.0}, viability=viability)
 
-def uniform(iterable, viability=DEFAULT_VIABILITY):
+def uniform(iterable, viability=None):
 	"""
 	Returns a random variable that takes each value in 'iterable' with equal
 	probability.
 	"""
 
+	if viability is None:
+		viability = get_default_viability()
 	obj = tuple(obj)
 	n = len(obj)
 	return RandVar({val: 1/n for val in obj}, viability=viability)
 
-def poisson(n, expectation=1.0, viability=DEFAULT_VIABILITY, stretch=False):
+def poisson(n, expectation=1.0, viability=None, stretch=False):
 	"""
 	Returns a random variable following a Poisson distribution with expected
 	value 'expectation', truncated so that values greater than 'n' are not
@@ -31,6 +33,8 @@ def poisson(n, expectation=1.0, viability=DEFAULT_VIABILITY, stretch=False):
 	probability for 'n'.
 	"""
 
+	if viability is None:
+		viability = get_default_viability()
 	dist = {}
 	total = 1.0
 	for i in range(n+1):

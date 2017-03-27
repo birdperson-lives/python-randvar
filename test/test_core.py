@@ -25,5 +25,20 @@ class TestRandVarMethods(unittest.TestCase):
 		self.assertLess(abs(counts[1] - 500), 53) # p < 0.001
 		self.assertLess(abs(counts[2] - 250), 46) # p < 0.001
 
+
+class TestDefaultViabilityFunctions(unittest.TestCase):
+	def test_both(self):
+		old = get_default_viability()
+		self.assertEqual(old, 0.00001)
+		with self.assertRaises(ViabilityError):
+			RandVar({0: 0.99, 1: 0.0099})
+		set_default_viability(0.0012)
+		self.assertEqual(get_default_viability(), 0.0012)
+		RandVar({0: 0.99, 1: 0.0099})
+		set_default_viability(old)
+		with self.assertRaises(ViabilityError):
+			RandVar({0: 0.99, 1: 0.009})
+
+
 if __name__ == "__main__":
 	unittest.main()

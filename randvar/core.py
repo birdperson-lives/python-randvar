@@ -23,13 +23,15 @@ class RandVar:
 	A random variable with finite domain.
 	"""
 
-	def __init__(self, dist, viability=DEFAULT_VIABILITY):
+	def __init__(self, dist, viability=None):
 		"""
 		Creates a finite random variable with the distribution 'dist'. If the
 		probabilities in dist are less that 'viability' away from 1.0, then a
 		'ViabilityError' is raised.
 		"""
 
+		if viability is None:
+			viability = DEFAULT_VIABILITY
 		for prob in dist.values():
 			assert 0.0 <= prob and prob <= 1.0
 		err = abs(sum(prob for prob in dist.values()) - 1.0)
