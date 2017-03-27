@@ -83,6 +83,8 @@ def set_default_viability(value):
 	DEFAULT_VIABILITY = value
 
 def _it_prod_help(iterator):
+	# Helper function for '_it_prod'
+
 	try:
 		mine = tuple(next(iterator))
 	except StopIteration:
@@ -92,6 +94,10 @@ def _it_prod_help(iterator):
 		return map(lambda pair: (pair[0],) + pair[1], itertools.product(mine, theirs))
 
 def _it_prod(iterator):
+	# Like 'itertools.product', but takes one argument which is in iterator that
+	# generates iterators, and the iterators so generated are multiplied
+	# together.
+
 	return tuple(_it_prod_help(iterator))
 
 def rand_apply(func, *args, viability=1.0, **kwargs):
