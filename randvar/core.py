@@ -112,33 +112,45 @@ def rand_apply(func, *args, viability=1.0, **kwargs):
 	the arguments and the viability keyword argument, if given.
 	"""
 
-	sargs = []
+	rand_args = []
 	for arg in args:
 		if isinstance(arg, RandVar):
-			sargs.append(arg)
+			rand_args.append(arg)
 		else:
-			sargs.append(RandVar({arg: 1.0}))
-	skwargs = {}
+			rand_args.append(RandVar({arg: 1.0}))
+	rand_kwargs = {}
 	for name in kwargs:
 		if isinstance(kwargs[name], RandVar):
-			skwargs[name] = kwargs[name]
+			rand_kwargs[name] = kwargs[name]
 		else:
-			skwargs[name] = RandVar({kwargs[name]: 1.0})
+			rand_kwargs[name] = RandVar({kwargs[name]: 1.0})
 	viability = min(itertools.chain([viability],
-									(sarg._viability for sarg in sargs),
-									(skwargs[name]._viability for name in skwargs)))
+									(sarg._viability for sarg in rand_args),
+									(rand_kwargs[name]._viability for name in rand_kwargs)))
 	dist = {}
-	for targs in _it_prod(var._dist for var in sargs):
-		for tkwargs in _it_prod(kwargs[name]._dist for name in skwargs):
-			tkwargs = {name: tkwargs[i] for name in skwargs}
-			prob = functools.reduce(operator.mul,
-									itertools.chain([1.0],
-													(sargs[i]._dist[targs[i]] for i in range(len(sargs))))) * \
-				   functools.reduce(operator.mul,
-				   					itertools.chain([1.0],
-				     								(skwargs[name]._dist[tkwargs[name]] for name in skwargs)))
+	for args_items in _it_prod(var._dist.items() for var in rand_args):
+		if len(args_items) > 0:
+			args_inst, args_prob = tuple(zip(*args_items))
+			args_inst = deepcopy(args_inst)
+		else:
+			args_inst = []
+			args_prob = []
+		for kwargs_items in _it_prod(kwargs[name]._dist.items() for name in rand_kwargs):
+			if len(kwargs_items) > 0:
+				kwargs_inst, kwargs_prob = tuple(zip(*kwargs_items))
+				kwargs_inst = {name: deepcopy(kwargs_inst[i]) for name in rand_kwargs}
+			else:
+				kwargs_inst = {}
+				kwargs_prob = []
+			prob = functools.reduce(operator.mul, itertools.chain([1.0], args_prob, kwargs_prob))
+			# prob = functools.reduce(operator.mul,
+			# 						itertools.chain([1.0],
+			# 										(rand_args[i]._dist[args_inst[i]] for i in range(len(rand_args))))) * \
+			# 	   functools.reduce(operator.mul,
+			# 	   					itertools.chain([1.0],
+			# 	     								(rand_kwargs[name]._dist[kwargs_inst[name]] for name in rand_kwargs)))
 			if prob > 0.0:
-				val = func(*targs, **tkwargs)
+				val = func(*args_inst, **kwargs_inst)
 				if val not in dist:
 					dist[val] = prob
 				else:

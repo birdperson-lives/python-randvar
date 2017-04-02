@@ -18,9 +18,9 @@ def uniform(iterable, viability=None):
 
 	if viability is None:
 		viability = get_default_viability()
-	obj = tuple(obj)
-	n = len(obj)
-	return RandVar({val: 1/n for val in obj}, viability=viability)
+	iterable = tuple(iterable)
+	n = len(iterable)
+	return RandVar({val: 1/n for val in iterable}, viability=viability)
 
 def poisson(n, expectation=1.0, viability=None, stretch=False):
 	"""
