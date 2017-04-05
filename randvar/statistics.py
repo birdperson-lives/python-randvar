@@ -34,7 +34,7 @@ def percentile(var, p):
     Returns the `p`th percentile value of the random variable `var`.
     """
 
-    pairs = sorted(((val, prob) for val, prob in var._dist.items()), lambda pair: pair[0])
+    pairs = sorted(((val, prob) for val, prob in var._dist.items()), key=lambda pair: pair[0])
     for val, prob in pairs:
         if p < prob:
             return deepcopy(val)
@@ -54,7 +54,7 @@ def mode(var, k=1):
     Returns the `k`th most probable value of the random variable `var`.
     """
 
-    pairs = sorted(var._dist.keys(), lambda val: var[val], reverse=True)
+    pairs = sorted(var._dist.keys(), key=lambda val: var[val], reverse=True)
     return pairs[k - 1]
 
 

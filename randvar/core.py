@@ -1,5 +1,6 @@
 from copy import deepcopy
 from random import random
+from collections import namedtuple
 import operator
 import itertools
 import functools
@@ -27,22 +28,28 @@ class RandomVariable:
     def __init__(self, dist, viability=None):
         """
         Creates a finite random variable with the distribution 'dist'. If the probabilities in dist are less that 
-        'viability' away from 1.0, then a 'InviableRandomVariableError' is raised.
+        'viability' away from 1.0, then a 'InviableRandomVariableError` is raised.
         """
 
         if viability is None:
             viability = DEFAULT_VIABILITY
         for prob in dist.values():
-            assert 0.0 <= prob <= 1.0
+            assert 0 <= prob <= 1
         err = abs(sum(prob for prob in dist.values()) - 1.0)
         if err > viability:
             raise InviableRandomVariableError(err)
         self._viability = viability
         self._dist = deepcopy(dist)
+        self._search = []
+        SearchNode = namedtuple("SearchNode", ["value", "lower", "upper"])
+        cum = 0
+        for val in dist:
+            self._search.append(SearchNode(value=val, lower=cum, upper=cum+dist[val]))
+            cum += dist[val]
 
     def __getitem__(self, val):
         """
-        Gets the probability of 'val'. If 'val' is not in the distribution, a probability of 0.0 is returned.
+        Gets the probability of `val`. If `val` is not in the distribution, a probability of 0.0 is returned.
         """
 
         if val in self._dist:
@@ -50,19 +57,37 @@ class RandomVariable:
         else:
             return 0.0
 
-    def sample(self, size=1):
+    def __str__(self):
+        return "RandomVariable(%s, viability=%s)" % (str(self._dist), str(self._viability))
+
+    def __repr__(self):
+        return "RandomVariable(%s, viability=%s)" % (str(self._dist), str(self._viability))
+
+    def choice(self):
         """
-        Returns a random sample of 'size' elements from the distribution.
+        Returns a random element from the distribution.
         """
 
-        if size == 1:
-            x = random()
-            for val, prob in self._dist.items():
-                if x < prob:
-                    return [deepcopy(val)]
-                x -= prob
-        else:
-            return [self.sample()[0] for _ in range(size)]
+        x = random()
+        bot = 0
+        top = len(self._search)
+        ind = (bot + top) // 2
+        item = self._search[ind]
+        while x < item.lower or x >= item.upper:
+            if x < item.lower:
+                top = ind
+            else:
+                bot = ind + 1
+            ind = (bot + top) // 2
+            item = self._search[ind]
+        return deepcopy(item.value)
+
+    def sample(self, size=1):
+        """
+        Returns a random sample of `size` elements from the distribution.
+        """
+
+        return [self.choice() for _ in range(size)]
 
 
 def get_default_viability():
@@ -75,7 +100,7 @@ def get_default_viability():
 
 def set_default_viability(value):
     """
-    Changes the default viability of new random variables to 'value'.
+    Changes the default viability of new random variables to `value`.
     """
 
     global DEFAULT_VIABILITY
@@ -84,7 +109,7 @@ def set_default_viability(value):
 
 
 def _it_prod_help(iterator):
-    # Helper function for '_it_prod'
+    # Helper function for `_it_prod`
 
     try:
         mine = tuple(next(iterator))
@@ -96,7 +121,7 @@ def _it_prod_help(iterator):
 
 
 def _it_prod(iterator):
-    # Like 'itertools.product', but takes one argument which is in iterator that
+    # Like `itertools.product`, but takes one argument which is in iterator that
     # generates iterators, and the iterators so generated are multiplied
     # together.
 
