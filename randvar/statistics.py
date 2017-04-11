@@ -1,7 +1,7 @@
 from copy import deepcopy
-from randvar import randomable
+from randvar import rand_apply
 import math
-import itertools
+import functools
 import operator
 
 
@@ -15,8 +15,8 @@ def mean(var, p=1.0):
     if p == float("-inf"):
         return min(val for val in var._dist)
     if p == 0.0:
-        return itertools.accumulate([1.0] + list(val ** prob for val, prob in var._dist.items()), operator.mul)
-    return sum(prob * val ** p for val, prob in var._dist.items()) ** (1 / p)
+        return functools.reduce(operator.mul, list(val ** prob for val, prob in var._dist.items()), 1)
+    return sum(prob * (val ** p) for val, prob in var._dist.items()) ** (1 / p)
 
 
 def expected_value(var):
@@ -43,7 +43,7 @@ def percentile(var, p):
 
 def median(var):
     """
-    Returns the median value of the random variable `var`.
+    Returns the median value of the random variable `var`. If the 
     """
 
     return percentile(var, 0.5)
@@ -63,8 +63,8 @@ def variance(var):
     Returns the variance of the random variable `var`.
     """
 
-    sqr = randomable(lambda x: x * x)
-    return expected_value(sqr(var)) - sqr(expected_value(var))
+    def sqr(x): return x * x
+    return expected_value(rand_apply(sqr, var)) - sqr(expected_value(var))
 
 
 def stddev(var):

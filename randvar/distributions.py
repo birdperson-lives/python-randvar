@@ -58,4 +58,6 @@ def poisson_stretch(n, expectation=1.0, viability=None):
         total -= dist[i]
     for i in range(n + 1):
         dist[i] /= 1 - total
+        if dist[i] > 1:
+            dist[i] = 1
     return RandomVariable(dist, viability=viability)
