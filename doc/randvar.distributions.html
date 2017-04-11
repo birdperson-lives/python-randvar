@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module randvar.distributions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="randvar.html"><font color="#ffffff">randvar</font></a>.distributions</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/birdperson-lives/learning/python-randvar/randvar/distributions.py">/home/birdperson-lives/learning/python-randvar/randvar/distributions.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="math.html">math</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-const"><strong>const</strong></a>(val, viability=None)</dt><dd><tt>Returns&nbsp;a&nbsp;random&nbsp;variable&nbsp;that&nbsp;takes&nbsp;the&nbsp;value&nbsp;`val`&nbsp;with&nbsp;probability&nbsp;1.0.</tt></dd></dl>
+ <dl><dt><a name="-poisson_stretch"><strong>poisson_stretch</strong></a>(n, expectation=1.0, viability=None)</dt><dd><tt>As&nbsp;`poisson_trunc`,&nbsp;but&nbsp;instead&nbsp;of&nbsp;adding&nbsp;the&nbsp;leftover&nbsp;probability&nbsp;to&nbsp;the&nbsp;`n`,&nbsp;all&nbsp;probabilities&nbsp;are&nbsp;scaled&nbsp;<br>
+uniformly&nbsp;to&nbsp;make&nbsp;the&nbsp;total&nbsp;probability&nbsp;`1.0`.</tt></dd></dl>
+ <dl><dt><a name="-poisson_trunc"><strong>poisson_trunc</strong></a>(n, expectation=1.0, viability=None)</dt><dd><tt>Returns&nbsp;a&nbsp;random&nbsp;variable&nbsp;following&nbsp;a&nbsp;Poisson&nbsp;distribution&nbsp;with&nbsp;expected&nbsp;value&nbsp;`expectation`,&nbsp;truncated&nbsp;so&nbsp;that&nbsp;<br>
+values&nbsp;greater&nbsp;than&nbsp;`n`&nbsp;are&nbsp;not&nbsp;possible.<br>
+&nbsp;<br>
+The&nbsp;probability&nbsp;that&nbsp;the&nbsp;value&nbsp;exceeds&nbsp;`n`&nbsp;is&nbsp;added&nbsp;onto&nbsp;the&nbsp;probability&nbsp;for&nbsp;`n`.</tt></dd></dl>
+ <dl><dt><a name="-uniform"><strong>uniform</strong></a>(iterable, viability=None)</dt><dd><tt>Returns&nbsp;a&nbsp;random&nbsp;variable&nbsp;that&nbsp;takes&nbsp;each&nbsp;value&nbsp;in&nbsp;`iterable`&nbsp;with&nbsp;equal&nbsp;probability.</tt></dd></dl>
+</td></tr></table>
+</body></html>
