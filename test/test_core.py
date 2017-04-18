@@ -1,6 +1,7 @@
 from math import factorial, isclose
 import itertools
 import unittest
+
 from randvar import InviableRandomVariableError, RandomVariable, get_default_viability, set_default_viability, \
     rand_apply, randomable
 

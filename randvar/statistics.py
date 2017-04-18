@@ -1,8 +1,9 @@
 from copy import deepcopy
-from randvar import rand_apply
 import math
 import functools
 import operator
+
+from randvar import rand_apply
 
 
 def mean(var, p=1.0):

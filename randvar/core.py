@@ -108,24 +108,24 @@ def set_default_viability(value):
     DEFAULT_VIABILITY = value
 
 
-def _it_prod_help(iterator):
-    # Helper function for `_it_prod`
-
-    try:
-        mine = tuple(next(iterator))
-    except StopIteration:
-        return (),
-    else:
-        theirs = tuple(_it_prod_help(iterator))
-        return map(lambda pair: (pair[0],) + pair[1], itertools.product(mine, theirs))
-
-
-def _it_prod(iterator):
-    # Like `itertools.product`, but takes one argument which is in iterator that
-    # generates iterators, and the iterators so generated are multiplied
-    # together.
-
-    return tuple(_it_prod_help(iterator))
+# def _it_prod_help(iterator):
+#     # Helper function for `_it_prod`
+#
+#     try:
+#         mine = tuple(next(iterator))
+#     except StopIteration:
+#         return (),
+#     else:
+#         theirs = tuple(_it_prod_help(iterator))
+#         return map(lambda pair: (pair[0],) + pair[1], itertools.product(mine, theirs))
+#
+#
+# def _it_prod(iterator):
+#     # Like `itertools.product`, but takes one argument which is in iterator that
+#     # generates iterators, and the iterators so generated are multiplied
+#     # together.
+#
+#     return tuple(_it_prod_help(iterator))
 
 
 def rand_apply(func, *args, viability=1.0, **kwargs):
@@ -155,14 +155,14 @@ def rand_apply(func, *args, viability=1.0, **kwargs):
                                     (sarg._viability for sarg in rand_args),
                                     (rand_kwargs[name]._viability for name in rand_kwargs)))
     dist = {}
-    for args_items in _it_prod(var._dist.items() for var in rand_args):
+    for args_items in itertools.product(*tuple(var._dist.items() for var in rand_args)):
         if len(args_items) > 0:
             args_inst, args_prob = tuple(zip(*args_items))
             args_inst = deepcopy(args_inst)
         else:
             args_inst = []
             args_prob = []
-        for kwargs_items in _it_prod(kwargs[name]._dist.items() for name in rand_kwargs):
+        for kwargs_items in itertools.product(*(tuple(kwargs[name]._dist.items() for name in rand_kwargs))):
             if len(kwargs_items) > 0:
                 kwargs_inst, kwargs_prob = tuple(zip(*kwargs_items))
                 kwargs_inst = {name: deepcopy(kwargs_inst[i]) for name in rand_kwargs}

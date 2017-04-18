@@ -1,5 +1,6 @@
-from randvar import get_default_viability, RandomVariable
 import math
+
+from randvar import get_default_viability, RandomVariable
 
 
 def const(val, viability=None):
