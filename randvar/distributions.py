@@ -15,22 +15,26 @@ def const(val, viability=None):
 
 def uniform(iterable, viability=None):
     """
-    Returns a random variable that takes each value in `iterable` with equal probability.
+    Returns a random variable that takes each value in `iterable` with equal
+    probability.
     """
 
     if viability is None:
         viability = get_default_viability()
     iterable = tuple(iterable)
     n = len(iterable)
-    return RandomVariable({val: 1 / n for val in iterable}, viability=viability)
+    return RandomVariable({val: 1 / n for val in iterable},
+                          viability=viability)
 
 
 def poisson_trunc(n, expectation=1.0, viability=None):
     """
-    Returns a random variable following a Poisson distribution with expected value `expectation`, truncated so that 
-    values greater than `n` are not possible.
+    Returns a random variable following a Poisson distribution with expected
+    value `expectation`, truncated so that values greater than `n` are not 
+    possible.
 
-    The probability that the value exceeds `n` is added onto the probability for `n`.
+    The probability that the value exceeds `n` is added onto the probability
+    for `n`.
     """
 
     if viability is None:
@@ -46,8 +50,9 @@ def poisson_trunc(n, expectation=1.0, viability=None):
 
 def poisson_stretch(n, expectation=1.0, viability=None):
     """
-    As `poisson_trunc`, but instead of adding the leftover probability to the `n`, all probabilities are scaled 
-    uniformly to make the total probability `1.0`.
+    As `poisson_trunc`, but instead of adding the leftover probability to the
+    `n`, all probabilities are scaled uniformly to make the total probability
+    `1.0`.
     """
 
     if viability is None:

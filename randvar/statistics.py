@@ -16,7 +16,8 @@ def mean(var, p=1.0):
     if p == float("-inf"):
         return min(val for val in var._dist)
     if p == 0.0:
-        return functools.reduce(operator.mul, list(val ** prob for val, prob in var._dist.items()), 1)
+        return functools.reduce(operator.mul, list(
+            val ** prob for val, prob in var._dist.items()), 1)
     return sum(prob * (val ** p) for val, prob in var._dist.items()) ** (1 / p)
 
 
@@ -24,7 +25,8 @@ def expected_value(var):
     """
     Returns the expected value of the random variable `var`.
 
-    Internally different from `mean(var, p=1.0)`, but should return essentially the same result.
+    Internally different from `mean(var, p=1.0)`, but should return essentially
+    the same result.
     """
 
     return sum(val * prob for val, prob in var._dist.items())
@@ -35,7 +37,8 @@ def percentile(var, p):
     Returns the `p`th percentile value of the random variable `var`.
     """
 
-    pairs = sorted(((val, prob) for val, prob in var._dist.items()), key=lambda pair: pair[0])
+    pairs = sorted(((val, prob) for val, prob in var._dist.items()),
+                   key=lambda pair: pair[0])
     for val, prob in pairs:
         if p < prob:
             return deepcopy(val)
@@ -44,7 +47,8 @@ def percentile(var, p):
 
 def median(var):
     """
-    Returns the median value of the random variable `var`. If the 
+    Returns the median value of the random variable `var`. Internally 
+    computed as the 50th percentile value.
     """
 
     return percentile(var, 0.5)
@@ -65,6 +69,7 @@ def variance(var):
     """
 
     def sqr(x): return x * x
+
     return expected_value(rand_apply(sqr, var)) - sqr(expected_value(var))
 
 
