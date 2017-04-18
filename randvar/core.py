@@ -203,7 +203,7 @@ def rand_apply(func, *args, **kwargs):
     return RandomVariable(dist)
 
 
-def randomable(func, viability=1.0):
+def randomable(func):
     """
     A function wrapper so that the functions returns a random variable 
     representing the distribution of return values of the body given that 
