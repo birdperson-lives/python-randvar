@@ -2,9 +2,8 @@ from math import factorial, isclose
 import itertools
 import unittest
 
-from randvar import InviableRandomVariableError, RandomVariable, \
-    get_default_viability, set_default_viability, \
-    rand_apply, randomable
+from randvar import ZeroDistributionError, RandomVariable, rand_apply, \
+    randomable
 
 
 class TestRandomVariableMethods(unittest.TestCase):
@@ -19,12 +18,13 @@ class TestRandomVariableMethods(unittest.TestCase):
         circumstances and that the distributions is in fact the one passed.
         """
 
-        with self.assertRaises(InviableRandomVariableError):
-            RandomVariable({'p': 0.375, 'q': 0.5})
-        myvar = RandomVariable({0: 0.25, 1: 0.5, 2: 0.25})
-        self.assertEqual(myvar._dist[0], 0.25)
-        self.assertEqual(myvar._dist[1], 0.5)
-        self.assertEqual(myvar._dist[2], 0.25)
+        with self.assertRaises(ZeroDistributionError):
+            RandomVariable({'p': 0, 'q': 0.0})
+        myvar = RandomVariable({0: 1, 1: 2, 2: 1})
+        self.assertEqual(myvar._weight_sum, 4)
+        self.assertEqual(myvar._dist[0], 1)
+        self.assertEqual(myvar._dist[1], 2)
+        self.assertEqual(myvar._dist[2], 1)
 
     def test_getitem(self):
         """
@@ -32,16 +32,24 @@ class TestRandomVariableMethods(unittest.TestCase):
         underlying distribution.
         """
 
-        myvar = RandomVariable({0: 0.25, 1: 0.5, 2: 0.25})
-        self.assertEqual(myvar[0], 0.25)
-        self.assertEqual(myvar[1], 0.5)
-        self.assertEqual(myvar[2], 0.25)
+        myvar = RandomVariable({0: 1, 1: 2, 2: 1})
+        self.assertEqual(myvar[0], 1 / 4)
+        self.assertEqual(myvar[1], 1 / 2)
+        self.assertEqual(myvar[2], 1 / 4)
 
     def test_choice(self):
         """
         Tests `RandomVariable.choice`, checking that the values indeed come
         from the distribution.
         """
+
+        myvar = RandomVariable({"heads": 1, "tails": 1})
+        counts = {"heads": 0, "tails": 0}
+        for _ in range(1000):
+            counts[myvar.choice()] += 1
+        self.assertEqual(counts["heads"] + counts["tails"], 1000)
+        self.assertLessEqual(abs(counts["heads"] - 500), 51)  # p < 0.001
+        self.assertLessEqual(abs(counts["tails"] - 500), 51)  # p < 0.001
 
     def test_sample(self):
         """
@@ -57,30 +65,6 @@ class TestRandomVariableMethods(unittest.TestCase):
         self.assertLess(abs(counts[0] - 250), 46)  # p < 0.001
         self.assertLess(abs(counts[1] - 500), 53)  # p < 0.001
         self.assertLess(abs(counts[2] - 250), 46)  # p < 0.001
-
-
-class TestDefaultViabilityFunctions(unittest.TestCase):
-    """
-    Tests functions that get and set `DEFAULT_VIABILITY`.
-    """
-
-    def test_both(self):
-        """
-        Simultaneously test `get_default_viability` and
-        `set_default_viability`, making sure that `RandomVariable.__init__`
-        still raises `InviableRandomVariableError` when appropriate.
-        """
-
-        old = get_default_viability()
-        self.assertEqual(old, 0.00001)
-        with self.assertRaises(InviableRandomVariableError):
-            RandomVariable({0: 0.99, 1: 0.0099})
-        set_default_viability(0.0012)
-        self.assertEqual(get_default_viability(), 0.0012)
-        RandomVariable({0: 0.99, 1: 0.0099})
-        set_default_viability(old)
-        with self.assertRaises(InviableRandomVariableError):
-            RandomVariable({0: 0.99, 1: 0.009})
 
 
 def binom(n, k):
