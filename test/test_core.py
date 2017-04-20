@@ -1,9 +1,10 @@
 from math import factorial, isclose
+from random import randint
 import itertools
 import unittest
 
-from randvar import ZeroDistributionError, RandomVariable, rand_apply, \
-    randomable
+from randvar import EmptyDistributionError, ZeroDistributionError, \
+    NegativeWeightError, RandomVariable, rand_apply, randomable
 
 
 class TestRandomVariableMethods(unittest.TestCase):
@@ -13,18 +14,36 @@ class TestRandomVariableMethods(unittest.TestCase):
 
     def test_init(self):
         """
-        Tests `RandomVariable.__init__`, ensuring that
-        `InviableRandomVariableError` is raised under appropriate 
-        circumstances and that the distributions is in fact the one passed.
+        Tests `RandomVariable.__init__`, ensuring that errors are raised 
+        when appropriate and that the distribution is in fact the one passed
+        otherwise.
         """
+
+        with self.assertRaises(EmptyDistributionError):
+            RandomVariable({})
 
         with self.assertRaises(ZeroDistributionError):
             RandomVariable({'p': 0, 'q': 0.0})
-        myvar = RandomVariable({0: 1, 1: 2, 2: 1})
+
+        with self.assertRaises(NegativeWeightError):
+            RandomVariable({None: -1})
+
+        myvar = RandomVariable({0: 1, 1: 2, 2: 1, 3: 0})
         self.assertEqual(myvar._weight_sum, 4)
         self.assertEqual(myvar._dist[0], 1)
         self.assertEqual(myvar._dist[1], 2)
         self.assertEqual(myvar._dist[2], 1)
+        with self.assertRaises(KeyError):
+            myvar._dist[3]
+
+    def test_len(self):
+        """
+        Tests `RandomVariable.__len__` with various distributions.
+        """
+
+        for n in range(1, 1000):
+            myvar = RandomVariable({x: 1 for x in range(n)})
+            self.assertEqual(len(myvar), n)
 
     def test_getitem(self):
         """
@@ -36,6 +55,58 @@ class TestRandomVariableMethods(unittest.TestCase):
         self.assertEqual(myvar[0], 1 / 4)
         self.assertEqual(myvar[1], 1 / 2)
         self.assertEqual(myvar[2], 1 / 4)
+
+    def test_iter(self):
+        """
+        Tests `RandomVariable.__iter__` with various distributions.
+        """
+
+        for n in range(1, 1000):
+            myvar = RandomVariable({x: 1 for x in range(n)})
+            self.assertEqual(set(iter(myvar)), set(range(n)))
+
+    def test_contains(self):
+        """
+        Tests `RandomVariable.__contains__` with various distributions.
+        """
+
+        for n in range(1, 1000):
+            myvar = RandomVariable({x: 1 for x in range(n)})
+            for _ in range(100):
+                x = randint(0, 2 * n)
+                if x < n:
+                    self.assertIn(x, myvar)
+                else:
+                    self.assertNotIn(x, myvar)
+
+    def test_probs(self):
+        """
+        Tests `RandomVariable.probs` with various distributions.
+        """
+
+        var1 = RandomVariable({None: 12, "word": 24, 42: 36})
+        var2 = RandomVariable({frozenset(): 4, 344.123: 200})
+        var3 = RandomVariable({(1, 2, 3): 5, object: 1, "stuff": 1})
+        self.assertEqual(set(var1.probs()), {1 / 6, 1 / 3, 1 / 2})
+        self.assertEqual(set(var2.probs()), {1 / 51, 50 / 51})
+        self.assertEqual(set(var3.probs()), {5 / 7, 1 / 7})
+
+    def test_dist(self):
+        """
+        Tests `RandomVariable.dist` with various distributions.
+        """
+
+        var1 = RandomVariable({None: 12, "word": 24, 42: 36})
+        var2 = RandomVariable({frozenset(): 4, 344.123: 200})
+        var3 = RandomVariable({(1, 2, 3): 5, object: 1, "stuff": 1})
+        self.assertEqual(set(var1.dist()), {(None, 1 / 6),
+                                            ("word", 1 / 3),
+                                            (42, 1 / 2)})
+        self.assertEqual(set(var2.dist()), {(frozenset(), 1 / 51),
+                                            (344.123, 50 / 51)})
+        self.assertEqual(set(var3.dist()), {((1, 2, 3), 5 / 7),
+                                            (object, 1 / 7),
+                                            ("stuff", 1 / 7)})
 
     def test_choice(self):
         """

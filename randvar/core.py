@@ -7,9 +7,17 @@ import functools
 
 DEFAULT_VIABILITY = 0.00001
 
+
 class ZeroDistributionError(Exception):
-    def __init__(self):
-        pass
+    pass
+
+
+class EmptyDistributionError(Exception):
+    pass
+
+
+class NegativeWeightError(Exception):
+    pass
 
 
 class RandomVariable:
@@ -32,8 +40,11 @@ class RandomVariable:
         """
 
         # Verify the distribution is valid and initialize
+        if len(dist) == 0:
+            raise EmptyDistributionError()
         for prob in dist.values():
-            assert 0 <= prob
+            if prob < 0:
+                raise NegativeWeightError(prob)
         self._weight_sum = sum(dist.values())
         if self._weight_sum == 0:
             raise ZeroDistributionError()
@@ -95,6 +106,7 @@ class RandomVariable:
         """
         Returns an iterator over the probabilities in the distribution.
         """
+
         return (weight / self._weight_sum for weight in self._dist.values())
 
     def dist(self):
@@ -102,6 +114,7 @@ class RandomVariable:
         Returns an iterator over the `(value, probability)` pairs in the 
         distribution.
         """
+
         return ((val, weight / self._weight_sum) for val, weight in
                  self._dist.items())
 
